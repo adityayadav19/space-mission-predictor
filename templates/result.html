@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .box {
+            background: #161b22;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px #58a6ff;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>🚀 Mission Success Prediction</h2>
+        <p><strong>Predicted Success Rate:</strong> {{ prediction }}%</p>
+        <a href="/">Try another prediction</a>
+    </div>
+</body>
+</html>

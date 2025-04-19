@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mission Success Predictor</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #0d1117;
+        color: #c9d1d9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        background: #161b22;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #58a6ff;
+      }
+      input[type="number"],
+      button {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 5px;
+        border: none;
+      }
+      button {
+        background-color: #238636;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #2ea043;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Predict Mission Success (%)</h2>
+      <form action="/predict" method="post">
+        <label>Mission Name:</label>
+        <select name="mission_name" class="form-control">
+          {% for i in range(1, 501) %}
+          <option value="Mission-{{ i }}">Mission-{{ i }}</option>
+          {% endfor %}</select
+        ><br /><br />
+
+        <div class="form-group">
+          <label>Target Type:</label>
+          <select name="target_type" class="form-control">
+            <option>Star</option>
+            <option>Exoplanet</option>
+            <option>Asteroid</option>
+            <option>Moon</option>
+            <option>Planet</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Target Name:</label>
+          <select name="target_name" class="form-control">
+            <option>Titan</option>
+            <option>Betelgeuse</option>
+            <option>Mars</option>
+            <option>Proxima b</option>
+            <option>Ceres</option>
+            <option>Io</option>
+            <option>Europa</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Mission Type:</label>
+          <select name="mission_type" class="form-control">
+            <option>Colonization</option>
+            <option>Exploration</option>
+            <option>Mining</option>
+            <option>Research</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Launch Vehicle:</label>
+          <select name="launch_vehicle" class="form-control">
+            <option>SLS</option>
+            <option>Starship</option>
+            <option>Ariane 6</option>
+            <option>Falcon Heavy</option>
+          </select>
+        </div>
+
+        <input
+          type="number"
+          name="Distance from Earth (light-years)"
+          placeholder="Distance from Earth (light-years)"
+          step="any"
+          required
+        />
+        <input
+          type="number"
+          name="Mission Duration (years)"
+          placeholder="Mission Duration (years)"
+          step="any"
+          required
+        />
+        <input
+          type="number"
+          name="Mission Cost (billion USD)"
+          placeholder="Mission Cost (billion USD)"
+          step="any"
+          required
+        />
+        <input
+          type="number"
+          name="Scientific Yield (points)"
+          placeholder="Scientific Yield (points)"
+          step="any"
+          required
+        />
+        <input
+          type="number"
+          name="Crew Size"
+          placeholder="Crew Size"
+          step="any"
+          required
+        />
+        <input
+          type="number"
+          name="Fuel Consumption (tons)"
+          placeholder="Fuel Consumption (tons)"
+          step="any"
+          required
+        />
+        <input
+          type="number"
+          name="Payload Weight (tons)"
+          placeholder="Payload Weight (tons)"
+          step="any"
+          required
+        />
+        <button type="submit">Predict</button>
+      </form>
+    </div>
+  </body>
+</html>
