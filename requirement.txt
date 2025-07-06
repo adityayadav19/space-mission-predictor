@@ -1,2 +1,4 @@
-gunicorn
 flask
+gunicorn
+numpy
+scikit-learn
