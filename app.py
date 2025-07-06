@@ -1,31 +1,23 @@
-from flask import Flask, render_template, request
+import gradio as gr
 import pickle
 import numpy as np
 import os
 import gdown
 
-app = Flask(__name__)
-
-# 🔽 CHANGE THIS TO YOUR ACTUAL FILE ID
+# 🔽 Google Drive model download
 FILE_ID = "18ZOqqhbHA9YGlrV85MzrmsVPkZXgcY14"
 URL = f"https://drive.google.com/uc?id={FILE_ID}"
+MODEL_PATH = "regressor.pkl"
 
-def download_model_from_drive():
+if not os.path.exists(MODEL_PATH):
     print("🔽 Downloading model using gdown...")
-    gdown.download(URL, "regressor.pkl", quiet=False)
+    gdown.download(URL, MODEL_PATH, quiet=False)
     print("✅ Model downloaded!")
 
-if not os.path.exists("regressor.pkl"):
-    download_model_from_drive()
-
-with open('regressor.pkl', 'rb') as f:
+with open(MODEL_PATH, 'rb') as f:
     regressor = pickle.load(f)
 
-@app.route('/')
-def index():
-    print("Index route accessed")
-    return render_template('index.html')
-MISSION_NAME_MAP ={f"Mission-{i}": i-1 for i in range(1, 501)}
+MISSION_NAME_MAP = {f"Mission-{i}": i-1 for i in range(1, 501)}
 TARGET_TYPE_MAP = {
     "Planet": 0,
     "Moon": 1,
@@ -41,14 +33,12 @@ TARGET_NAME_MAP = {
     "Ceres": 4,
     "Europa": 5,
     "Io": 6,
-    # Add all target names...
 }
 MISSION_TYPE_MAP = {
     "Exploration": 0,
     "Research": 1,
     "Colonization": 2,
     "Mining": 3,
-    # Add all mission types...
 }
 LAUNCH_VEHICLE_MAP = {
     "SLS": 0,
@@ -56,36 +46,48 @@ LAUNCH_VEHICLE_MAP = {
     "Ariane 6": 2,
     "Falcon Heavy": 3,
 }
-@app.route('/predict', methods=['POST'])
-def predict():
-    print("Form keys received:", list(request.form.keys()))
-    print("Form data received:", dict(request.form))
-     # Convert categorical dropdowns to numeric using mappings
-    mission_name = MISSION_NAME_MAP[request.form['mission_name']]
-    target_type = TARGET_TYPE_MAP[request.form['target_type']]
-    target_name = TARGET_NAME_MAP[request.form['target_name']]
-    mission_type = MISSION_TYPE_MAP[request.form['mission_type']]
-    launch_vehicle = LAUNCH_VEHICLE_MAP[request.form['launch_vehicle']]
 
-    input_features = [
-        mission_name,
-        target_type,
-        target_name,
-        mission_type,
-        launch_vehicle,
-        float(request.form['Distance from Earth (light-years)']),
-        float(request.form['Mission Duration (years)']),
-        float(request.form['Mission Cost (billion USD)']),
-        float(request.form['Scientific Yield (points)']),
-        float(request.form['Crew Size']),
-        float(request.form['Fuel Consumption (tons)']),
-        float(request.form['Payload Weight (tons)']),
-    ]
+def predict_success(mission_name, target_type, target_name, mission_type, launch_vehicle,
+                    distance, duration, cost, yield_score, crew_size, fuel, payload):
+    try:
+        input_features = [
+            MISSION_NAME_MAP[mission_name],
+            TARGET_TYPE_MAP[target_type],
+            TARGET_NAME_MAP[target_name],
+            MISSION_TYPE_MAP[mission_type],
+            LAUNCH_VEHICLE_MAP[launch_vehicle],
+            float(distance),
+            float(duration),
+            float(cost),
+            float(yield_score),
+            float(crew_size),
+            float(fuel),
+            float(payload)
+        ]
+        prediction = regressor.predict([input_features])[0]
+        return f"Predicted Mission Success Rate: {round(prediction, 2)}%"
+    except Exception as e:
+        return f"Error: {str(e)}"
 
-    prediction = regressor.predict([input_features])[0]
-    prediction = round(prediction, 2)
+iface = gr.Interface(
+    fn=predict_success,
+    inputs=[
+        gr.Dropdown(list(MISSION_NAME_MAP.keys()), label="Mission Name"),
+        gr.Dropdown(list(TARGET_TYPE_MAP.keys()), label="Target Type"),
+        gr.Dropdown(list(TARGET_NAME_MAP.keys()), label="Target Name"),
+        gr.Dropdown(list(MISSION_TYPE_MAP.keys()), label="Mission Type"),
+        gr.Dropdown(list(LAUNCH_VEHICLE_MAP.keys()), label="Launch Vehicle"),
+        gr.Number(label="Distance from Earth (light-years)"),
+        gr.Number(label="Mission Duration (years)"),
+        gr.Number(label="Mission Cost (billion USD)"),
+        gr.Number(label="Scientific Yield (points)"),
+        gr.Number(label="Crew Size"),
+        gr.Number(label="Fuel Consumption (tons)"),
+        gr.Number(label="Payload Weight (tons)")
+    ],
+    outputs="text",
+    title="🚀 Space Mission Success Predictor",
+    description="Input mission parameters and get the predicted success rate."
+)
 
-    return render_template('result.html', prediction=prediction)
-
-if __name__ == "__main__":
-    app.run(debug=True)
+iface.launch()
