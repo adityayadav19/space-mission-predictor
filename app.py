@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import pickle
 import numpy as np
 import os
-import requests
+import gdown
 
 app = Flask(__name__)
 
