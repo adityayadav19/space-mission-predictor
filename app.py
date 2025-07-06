@@ -8,20 +8,16 @@ app = Flask(__name__)
 
 # 🔽 CHANGE THIS TO YOUR ACTUAL FILE ID
 FILE_ID = "18ZOqqhbHA9YGlrV85MzrmsVPkZXgcY14"
+URL = f"https://drive.google.com/uc?id={FILE_ID}"
 
 def download_model_from_drive():
-    print("🔽 Downloading model from Google Drive...")
-    url = f"https://drive.google.com/uc?export=download&id={FILE_ID}"
-    response = requests.get(url)
-    with open("regressor.pkl", "wb") as f:
-        f.write(response.content)
+    print("🔽 Downloading model using gdown...")
+    gdown.download(URL, "regressor.pkl", quiet=False)
     print("✅ Model downloaded!")
 
-# ✅ Download if not already present
 if not os.path.exists("regressor.pkl"):
     download_model_from_drive()
 
-# ✅ Load the trained regressor
 with open('regressor.pkl', 'rb') as f:
     regressor = pickle.load(f)
 
