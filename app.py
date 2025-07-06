@@ -1,10 +1,27 @@
 from flask import Flask, render_template, request
 import pickle
 import numpy as np
+import os
+import requests
 
 app = Flask(__name__)
 
-# Load the trained regressor
+# 🔽 CHANGE THIS TO YOUR ACTUAL FILE ID
+FILE_ID = "18ZOqqhbHA9YGlrV85MzrmsVPkZXgcY14"
+
+def download_model_from_drive():
+    print("🔽 Downloading model from Google Drive...")
+    url = f"https://drive.google.com/uc?export=download&id={FILE_ID}"
+    response = requests.get(url)
+    with open("regressor.pkl", "wb") as f:
+        f.write(response.content)
+    print("✅ Model downloaded!")
+
+# ✅ Download if not already present
+if not os.path.exists("regressor.pkl"):
+    download_model_from_drive()
+
+# ✅ Load the trained regressor
 with open('regressor.pkl', 'rb') as f:
     regressor = pickle.load(f)
 
