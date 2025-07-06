@@ -2,4 +2,4 @@ flask
 gunicorn
 numpy
 scikit-learn
-requests
+gdown
